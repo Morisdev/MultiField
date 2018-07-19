@@ -1,0 +1,76 @@
+/* MultiField CSS */
+
+.mf-box{
+	position : relative;
+}
+.mf-results{
+	margin-top : 5px;
+}
+.mf-button-add {
+	position : relative;
+    width : 15px;
+    height : 15px;
+    cursor : pointer;
+    right : 22px;
+	top : 3px;
+    display : inline-block;
+    background: url(./images/mf_add.png) no-repeat center;
+}
+.mf-button-del {
+	position : relative;
+    width : 15px;
+    height : 15px;
+    cursor : pointer;
+    right : 22px;
+	top : 3px;
+    display : inline-block;
+    background: url(./images/mf_del.png) no-repeat center;
+}
+.mf-button-del-hover{
+	 background: url(./images/mf_del_hover.png) no-repeat center;
+}
+.mf-input {
+	outline : none;
+	border : 1px solid #d9d9d9;
+	border-radius : 3px;
+	height : 25px;
+	line-height : 25px;
+	padding : 0 10px;
+}
+.mf-row{
+	margin-top : 1px;
+}
+.mf-row-input {
+	outline : none;
+	height : 25px;
+	line-height : 25px;
+	padding : 0 10px;
+	border-width : 1px;
+	border-radius : 3px;
+	border-style: dashed;
+	border-color : transparent;
+}
+.mf-row-edit {
+	border-color : #d9d9d9;
+}
+.mf-warning {
+	border-color : #FF3C3C;
+}
+.mf-workspace .mf-warning{
+	border-color : #FFA500;
+}
+.mf-qtip-img{
+	display : none;
+	position: relative;
+    width: 17px;
+    height: 17px;
+    cursor: help;
+    left: -3px;
+    top: 4px;
+}
+.mf-qtip-warn{
+    background: url(./images/mf_qtip_warning.png) no-repeat center;
+}
+.mf-qtip-error{
+    background: url(./images/mf_qtip_error.png) no-repeat center;
+}
