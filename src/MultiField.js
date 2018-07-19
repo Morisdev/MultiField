@@ -1,5 +1,5 @@
 /*
- *	MultiField (base on jQuery) 
+ *  MultiField (base on jQuery) 
  *  @author Mozfe
  *  @email mozshaw@foxmail.com
  */
@@ -333,8 +333,7 @@
 				me.data('multifield', new MultiField(options, this))
 			}
 		});
-		
+				
 		return ret;
-	}
-	
+	}	
 })(jQuery, window);
