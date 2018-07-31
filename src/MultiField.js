@@ -16,6 +16,10 @@
 	MultiField.prototype.customize = function(custom) {
 		// TODO expand
 		var config = {
+			width : 220,
+			height : 25,
+			resultHeight : 140,
+			wrapCls : '',
 			placeholder : '',
 			msec : 500,
 			limit : 5,
@@ -23,6 +27,7 @@
 			enableEmpty : false,
 			require : true,
 			validator : null,
+			autoComplete : null,
 			regex : {
 				empty : /\S/g,
 				ipv4 : '',
@@ -43,18 +48,28 @@
 		return $.extend(config, custom);
 	}
 	
+	MultiField.prototype.WH = function() {
+		var w = parseInt(this.options.width) + 'px',
+			h = parseInt(this.options.height) + 'px',
+			ww = parseInt(this.options.width) + 80 + 'px',
+			rh = parseInt(this.options.resultHeight) + 'px';
+		
+		return {width : w, height : h, wrapWidth : ww, resultHeight : rh};
+	}
+	
 	MultiField.prototype.init = function(options) {
 		var tpl = [], 
 			options = this.options,
 			prev = $(this.el);
 		
-		tpl.push("<div class='mf-box'>");
+		tpl.push("<div class='mf-box " + options.wrapCls + "' style='width:" + this.WH().wrapWidth + "'>");
+		tpl.push("<div class='mf-results' style='max-height:" + this.WH().resultHeight +"'></div>");
 		tpl.push("<div class='mf-workspace'>");
-		tpl.push("<input type='text' class='mf-input' spellcheck='false' placeholder='" + options.placeholder + "'/>");
+		tpl.push("<input type='text' class='mf-input' style='width:" + this.WH().width + 
+				";height:" + this.WH().height + "' spellcheck='false' placeholder='" + options.placeholder + "'/>");
 		tpl.push("<div class='mf-button-add'></div>");
 		tpl.push("<div class='mf-qtip-img mf-qtip-warn'></div>");
 		tpl.push("</div>");
-		tpl.push("<div class='mf-results'></div>");
 		tpl.push("</div>");
 		prev.hide();
 		prev.after(tpl.join(''));
@@ -92,9 +107,16 @@
 	
 	MultiField.prototype.add = function() {
 		var currVal = this.inputEl.val(),
+			autocomp = this.options.autoComplete,
 			tpl = [],
 			row = null,
 			me = this;
+		
+		// auto-complete
+		if (autocomp && typeof autocomp == 'function') {
+			currVal = autocomp.call(this, currVal);
+			this.inputEl.val(currVal);
+		}
 		
 		if (!this.validLimit() || 
 			!this.validText(currVal, this.inputEl)) {
@@ -102,6 +124,7 @@
 		}
 
 		this.insert(currVal);
+		this.scrollDown();
 	}
 	
 	MultiField.prototype.insert = function(val) {
@@ -110,13 +133,14 @@
 			me = this;
 		
 		tpl.push("<div class='mf-row'>");
-		tpl.push("<input type='text' class='mf-row-input' spellcheck='false' value='", val, "'>");	
+		tpl.push("<input type='text' class='mf-row-input' style='width:" + this.WH().width
+				+ ";height:" + this.WH().height + "' spellcheck='false' value='", val, "'>");	
 		tpl.push("<div class='mf-button-del'></div>");
 		tpl.push("<div class='mf-qtip-img mf-qtip-error'></div>");
 		tpl.push("</div>");
 		
 		row = $(tpl.join(''));
-		row.hide().prependTo(this.resultEl)
+		row.hide().appendTo(this.resultEl)
 			.data('value', val)
 			.show(this.options.msec);
 		this.reset();
@@ -156,7 +180,13 @@
 	
 	MultiField.prototype.edit = function(row, newValue) {
 		var oldValue = row.data('value'),
+			autocomp = this.options.autoComplete,
 			el = row.find('.mf-row-input');
+		
+		if (autocomp && typeof autocomp == 'function') {
+			newValue = autocomp.call(this, newValue);
+			el.val(newValue);
+		}
 		
 		if (!this.validText(newValue, el, oldValue)) {
 			return;
@@ -286,7 +316,10 @@
 	}
 	
 	MultiField.prototype.reset = function() {
-		this.inputEl.val('');
+		var el = this.inputEl,
+			qimg = el.parent().find('.mf-qtip-img');
+		el.removeClass('mf-warning').val('');
+		qimg.css('display', 'none');
 	}
 	
 	MultiField.prototype.getValue = function() {
@@ -312,6 +345,26 @@
 		qimg.prop('title', msg);
 	}
 	
+	MultiField.prototype.scrollDown = function() {
+		var el = this.resultEl, 
+			top = el.prop('scrollHeight'),
+			msec = this.options.msec;
+		
+		el.animate({scrollTop : top}, msec);
+	}
+	
+	MultiField.prototype.scrollUp = function() {
+		var el = this.resultEl, 
+			top = 0;
+		
+		el.scrollTop(top);
+	}
+	
+	MultiField.prototype.clear = function() {
+		this.reset();
+		this.removeAll();
+	}
+	
 	$.fn.multifield = function(options) {
 		var args = Array.prototype.slice.call(arguments, 1),
 			ret = this;
@@ -333,7 +386,8 @@
 				me.data('multifield', new MultiField(options, this))
 			}
 		});
-				
+		
 		return ret;
-	}	
+	}
+	
 })(jQuery, window);

@@ -30,7 +30,19 @@
 <script>
 	$('#test').multifield({
 		// config
-		placeholder : '请输入IP地址'
+		placeholder : '请输入IP地址',
+		limit : 10,
+		autoComplete : function(val) {
+			var segments = val.split('/'),
+				ip = segments[0],
+				mask = segments[1];
+			
+			if (mask) {
+				return; 
+			}
+			
+			return ip + '/32';
+		}
 	});
 
 	// get value
